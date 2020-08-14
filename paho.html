@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+</head>
+<body>
+<script language="JavaScript">
+    $(document).ready(function () {
+
+        let url = 'ws://61.172.240.35:1888/mq';
+        // let url = 'ws://www.shbyhome.com:1888/ws';
+        // let clientId = 'eeaf8184-d7f4-40dc-bba2-aa962fe3ccda';
+        let clientId = 'mqtt-h5-client';
+
+        let client = new Paho.MQTT.Client(url, clientId);
+
+        // set callback handlers
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        let options = {
+            userName: 'gmq',
+            password: '1qazxsw2',
+            onSuccess: onConnect
+        };
+
+        client.connect(options);
+
+        // called when the client connects
+        function onConnect() {
+            // Once a connection has been made, make a subscription and send a message.
+            console.log("onConnect");
+            client.subscribe("asian/#");
+             sendMessage()
+
+        }
+
+        // called when the client loses its connection
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+            }
+        }
+
+        // called when a message arrives
+        function onMessageArrived(message) {
+            console.log("onMessageArrived:[topic]" + message.destinationName + "\t\t[playload]" + message.payloadString);
+        }
+
+        function sendMessage() {
+            message = new Paho.MQTT.Message("Hello");
+            message.destinationName = "World";
+            client.send(message);
+            debugger
+        }
+    })
+</script>
+</body>
+</html>
